@@ -22,7 +22,11 @@ router.post( '/',
     crearHospital );
 
 router.put( '/:id',
-            [], updateHospital );
+            [
+                validarToken,
+                check('nombre', 'El nombre de hospital es necesario').not().isEmpty(),
+                validarCampos
+            ], updateHospital );
 
 router.delete( '/:id', validarToken, deleteHospital);
 
