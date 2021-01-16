@@ -4,6 +4,7 @@ const { generarJWT } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/google-verify');
 
 const Usuario = require('../models/usuario');
+const { getMenuFrontEnd } = require('../helpers/menu-frontend');
 
 const login = async(req, res = response) => {
 
@@ -18,7 +19,7 @@ const login = async(req, res = response) => {
             return res.status(404).json({
                 ok: false,
                 msg: 'Email/Contraseña no válida'
-            })
+            });
         }
 
         // Verificar contraseña
@@ -37,7 +38,8 @@ const login = async(req, res = response) => {
         const token = await generarJWT( usuarioDB._id );
         res.json({
             ok: true,
-            token
+            token,
+            menu: getMenuFrontEnd( usuarioDB.role )
         });
 
         
@@ -50,7 +52,7 @@ const login = async(req, res = response) => {
         });
 
     }
-}
+};
 
 const googleSigIn = async( req, res = response ) => {
 
@@ -84,8 +86,9 @@ const googleSigIn = async( req, res = response ) => {
         const token = await generarJWT( usuario.id );
         res.json({
             ok: true,
-            token
-        })
+            token,
+            menu: getMenuFrontEnd( usuario.role )
+        });
 
     } catch (error) {
         
@@ -93,11 +96,11 @@ const googleSigIn = async( req, res = response ) => {
             ok: false,
             msg: 'token no es correcto',
             error
-        })
+        });
 
     }
     
-}
+};
 
 const renewToken = async( req, res=response ) => {
 
@@ -112,12 +115,13 @@ const renewToken = async( req, res=response ) => {
     res.json( {
         ok: true,
         token, 
-        usuario: usuarioDB
-    })
-}
+        usuario: usuarioDB,
+        menu: getMenuFrontEnd( usuarioDB.role )
+    });
+};
 
 module.exports = {
     login,
     renewToken,
     googleSigIn
-}
+};

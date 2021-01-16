@@ -1,4 +1,7 @@
 const jwt = require('jsonwebtoken');
+const usuario = require('../models/usuario');
+
+const Usuario = require('../models/usuario');
 
 
 const validarToken = ( req, res, next ) => {
@@ -9,7 +12,7 @@ const validarToken = ( req, res, next ) => {
         return res.status(401).json({
             ok: false,
             msg: 'No hay token en la peticion'
-        })
+        });
     }
 
     try {
@@ -23,11 +26,80 @@ const validarToken = ( req, res, next ) => {
         return res.status(401).json({
             ok: false,
             msg: 'Token incorrecto'
-        })
+        });
     }
 
-}
+};
+
+const validarAdmin = async(req, res, next ) => {
+
+    const uid = req.uid;
+    
+    try {
+        
+        const usuarioDB = await Usuario.findById( uid );
+            
+        if( !usuarioDB ){
+            return res.status(404).json({
+                ok: false,
+                msg: 'Usuario no existe'
+            });
+        }
+        if( usuarioDB.role !== 'ADMIN_ROLE'){
+            return res.status(403).json({
+                ok: false,
+                msg: 'Usuario no tiene privilegios'
+            });
+        }
+        
+        next();
+
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msg: 'hable con el administrador'
+        });
+    }
+
+
+};
+
+const validarAdminOIgual = async(req, res, next ) => {
+
+    const uid = req.uid;
+    const id = req.params.id;
+    
+    try {
+        
+        const usuarioDB = await Usuario.findById( uid );
+            
+        if( !usuarioDB ){
+            return res.status(404).json({
+                ok: false,
+                msg: 'Usuario no existe'
+            });
+        }
+        if( usuarioDB.role === 'ADMIN_ROLE' || uid === id){
+            next();
+        }else{
+            return res.status(403).json({
+                ok: false,
+                msg: 'Usuario no tiene privilegios'
+            });
+        }                
+
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msg: 'hable con el administrador'
+        });
+    }
+
+
+};
 
 module.exports = {
-    validarToken
-}
+    validarToken,
+    validarAdmin,
+    validarAdminOIgual
+};
