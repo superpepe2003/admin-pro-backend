@@ -7,11 +7,11 @@ const { check } = require('express-validator');
 const { validarCampos } = require('../middlewares/validar');
 
 const { validarToken } = require('../middlewares/validar-jwt');
-const { getMedicos, crearMedicos, updateMedicos, deleteMedicos } = require('../controllers/medicos')
+const { getMedicos, getMedicosId, crearMedicos, updateMedicos, deleteMedicos } = require('../controllers/medicos')
 const router = Router();
 
 router.get( '/', validarToken, getMedicos );
-
+router.get( '/:id', validarToken, getMedicosId );
 router.post( '/', 
     [ 
         validarToken,

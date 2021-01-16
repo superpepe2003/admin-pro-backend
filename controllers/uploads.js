@@ -62,12 +62,13 @@ const fileUpload = ( req, res = response) => {
 
         res.json({
             ok: true,
-            msg: 'La imagen se guardo correctamente!'
-        })
+            msg: 'La imagen se guardo correctamente!',
+            nombreArchivo
+        });
 
-    })
+    });
 
-}
+};
 
 const retornaImagen = ( req, res=response ) => {
     const { tipo, foto } = req.params;
